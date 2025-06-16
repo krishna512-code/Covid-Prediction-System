@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COVID-19 </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .symptom-icon {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            padding: 0.75rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+            border: none;
+            padding: 0.8rem 2rem;
+            font-weight: 600;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0b5ed7 0%, #0bb6d9 100%);
+            transform: translateY(-2px);
+        }
+        
+        .alert {
+            border-radius: 10px;
+        }
+        
+        .prevention-icon {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+        }
+        
+        .prevention-card {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .prevention-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .btn-back:hover {
+            background: linear-gradient(135deg, #0b5ed7 0%, #0bb6d9 100%);
+            transform: translateY(-2px);
+        }
+        /* Quick Links, Resources, and Contact styles */
+        
+        .card .list-unstyled li a {
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        
+        .card .list-unstyled li a:hover {
+            color: #0d6efd;
+            transform: translateX(5px);
+        }
+        
+        .card .list-unstyled li i {
+            color: #0d6efd;
+        }
+        
+        .card .card-title {
+            color: #0d6efd;
+            font-weight: 600;
+        }
+        
+        .card .list-unstyled li span {
+            color: #495057;
+        }
+        
+        .github-btn:hover {
+            background: #0d6efd !important;
+            color: #fff !important;
+            border-color: #0d6efd !important;
+        }
+        
+        .github-btn:hover .fa-github {
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-dark header py-3">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="text-start">
+                <h1><i class="fas fa-virus me-2"></i>COVID-19 Risk </h1>
+                <p class="lead">Check your risk level based on symptoms</p>
+            </div>
+            <!-- GitHub button visible on larger screens -->
+            <a href="https://github.com/krishna512-code" target="_blank" class="btn btn-outline-light ms-3 github-btn d-none d-md-flex" style="height: 48px; display: flex; align-items: center; border: 2px solid #fff; color: #0d6efd; background: rgba(255,255,255,0.85);">
+                <i class="fab fa-github fa-lg me-2" style="color: #0d6efd;"></i> GitHub
+            </a>
+            <!-- Dropdown menu for mobile -->
+            <div class="d-md-none w-100 d-flex justify-content-center align-items-center">
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="mobileMenuButton" data-bs-toggle="dropdown" aria-expanded="false" style="height: 48px; width: 48px; border: 2px solid #fff; background: rgba(255,255,255,0.85); color: #0d6efd; display: flex; align-items: center; justify-content: center;">
+                        <!-- Removed GitHub icon, Bootstrap's dropdown-toggle will provide the down arrow -->
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mobileMenuButton">
+                        <li>
+                            <a class="dropdown-item" href="https://github.com/krishna512-code" target="_blank" style="display: flex; align-items: center; padding: 0.5rem 1rem;">
+                                <i class="fab fa-github fa-lg me-2" style="color: #0d6efd;"></i> GitHub
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %} {% for category, message in messages %}
+        <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body p-5">
+                        <form id="assessmentForm" method="POST" class="needs-validation" novalidate>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fever" class="form-label">Fever</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <img src="{{ url_for('static', filename='images/fever.svg') }}" alt="Fever" class="symptom-icon">
+                                        </span>
+                                        <select class="form-select" id="fever" name="fever" required>
+                                            <option value="">Select...</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="age" class="form-label">Age</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                        <input type="number" class="form-control" id="age" name="age" min="0" max="100" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="pain" class="form-label">Body Pain</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <img src="{{ url_for('static', filename='images/pain.svg') }}" alt="Body Pain" class="symptom-icon">
+                                        </span>
+                                        <select class="form-select" id="pain" name="pain" required>
+                                            <option value="">Select...</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="runnyNose" class="form-label">Runny Nose</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <img src="{{ url_for('static', filename='images/runny-nose.svg') }}" alt="Runny Nose" class="symptom-icon">
+                                        </span>
+                                        <select class="form-select" id="runnyNose" name="runnyNose" required>
+                                            <option value="">Select...</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="diffBreath" class="form-label">Difficulty Breathing</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">
+                                            <img src="{{ url_for('static', filename='images/breathing.svg') }}" alt="Difficulty Breathing" class="symptom-icon">
+                                        </span>
+                                        <select class="form-select" id="diffBreath" name="diffBreath" required>
+                                            <option value="">Select...</option>
+                                            <option value="1">Yes</option>
+                                            <option value="0">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Calculate Risk
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Important Information</h4>
+                        <p class="card-text">
+                            This tool is for preliminary assessment only. It is not a medical diagnosis. Please consult a healthcare professional for proper medical advice.
+                        </p>
+                        <div class="row mt-3">
+                            <div class="col-md-4">
+                                <div class="prevention-card">
+                                    <img src="{{ url_for('static', filename='images/mask.svg') }}" alt="Wear Mask" class="prevention-icon">
+                                    <h5>Wear Mask</h5>
+                                    <p>Always wear a mask in public places</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="prevention-card">
+                                    <img src="{{ url_for('static', filename='images/wash-hands.svg') }}" alt="Wash Hands" class="prevention-icon">
+                                    <h5>Wash Hands</h5>
+                                    <p>Wash hands frequently with soap and water</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="prevention-card">
+                                    <img src="{{ url_for('static', filename='images/distance.svg') }}" alt="Social Distance" class="prevention-icon">
+                                    <h5>Social Distance</h5>
+                                    <p>Maintain 6 feet distance from others</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Links, Resources, and Contact Section for Desktop -->
+    <div class="container mt-5 mb-5 d-none d-md-block">
+        <div class="row">
+            <!-- Quick Links -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-link me-2"></i>Quick Links
+                        </h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right me-2"></i>COVID-19 Guidelines
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right me-2"></i>Vaccination Centers
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right me-2"></i>Testing Centers
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right me-2"></i>Travel Guidelines
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Resources -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-book me-2"></i>Resources
+                        </h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-file-pdf me-2"></i>COVID-19 Prevention Guide
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-file-pdf me-2"></i>Vaccination Information
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-file-pdf me-2"></i>Health Guidelines
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-file-pdf me-2"></i>Emergency Contacts
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Contact -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title mb-4">
+                            <i class="fas fa-phone me-2"></i>Contact
+                        </h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-phone-alt me-2"></i>
+                                <span>Emergency: 911</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-phone-alt me-2"></i>
+                                <span>COVID-19 Helpline: 1-800-XXX-XXXX</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-envelope me-2"></i>
+                                <span>support@covidassessment.com</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <span>123 Health Street, Medical City</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accordion for Mobile/Tablet -->
+    <div class="container mt-5 mb-5 d-block d-md-none">
+        <div class="accordion" id="infoAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingLinks">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLinks" aria-expanded="true" aria-controls="collapseLinks">
+                        <i class="fas fa-link me-2"></i>Quick Links
+                    </button>
+                </h2>
+                <div id="collapseLinks" class="accordion-collapse collapse show" aria-labelledby="headingLinks" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right me-2"></i>COVID-19 Guidelines
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right me-2"></i>Vaccination Centers
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right me-2"></i>Testing Centers
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-chevron-right me-2"></i>Travel Guidelines
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingResources">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseResources" aria-expanded="false" aria-controls="collapseResources">
+                        <i class="fas fa-book me-2"></i>Resources
+                    </button>
+                </h2>
+                <div id="collapseResources" class="accordion-collapse collapse" aria-labelledby="headingResources" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-file-pdf me-2"></i>COVID-19 Prevention Guide
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-file-pdf me-2"></i>Vaccination Information
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-file-pdf me-2"></i>Health Guidelines
+                                </a>
+                            </li>
+                            <li class="mb-2">
+                                <a href="#" class="text-decoration-none">
+                                    <i class="fas fa-file-pdf me-2"></i>Emergency Contacts
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingContact">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContact" aria-expanded="false" aria-controls="collapseContact">
+                        <i class="fas fa-phone me-2"></i>Contact
+                    </button>
+                </h2>
+                <div id="collapseContact" class="accordion-collapse collapse" aria-labelledby="headingContact" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-phone-alt me-2"></i>
+                                <span>Emergency: 911</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-phone-alt me-2"></i>
+                                <span>COVID-19 Helpline: 1-800-XXX-XXXX</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-envelope me-2"></i>
+                                <span>support@covidassessment.com</span>
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <span>123 Health Street, Medical City</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer mt-auto py-3 bg-light text-center" style="border-top: 1px solid #e3e3e3;">
+        <div class="container">
+            <span class="text-muted">&copy; <span id="year"></span> Krishna Kant Narayan. All rights reserved.</span>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form validation
+        document.getElementById('assessmentForm').addEventListener('submit', function(e) {
+            const age = document.getElementById('age').value;
+            if (age < 0 || age > 100) {
+                e.preventDefault();
+                alert('Age must be between 0 and 100');
+            }
+        });
+
+        // Set current year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+
+</html>
