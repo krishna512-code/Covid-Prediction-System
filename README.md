@@ -105,18 +105,9 @@ This project is licensed for educational purposes and open-source contributions.
 ## 🙋‍♂️ Author
 
 **Krishna Kant Narayan**
-📧 [krishnakanth.dev@gmail.com](mailto:krishnakanth.dev@gmail.com)
+📧 [krishna.kant.2136@gmail.com](mailto:krishna.kant.2136@gmail.com)
 🔗 [LinkedIn](https://www.linkedin.com/in/krishna-kant-narayan)
 
 ---
 
-## 🌟 Show Your Support
-
-If you found this project helpful, feel free to ⭐ the repo and share it!
-
-```
-
----
-
 Happy coding! 🚀
-```
